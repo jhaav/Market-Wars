@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>MARKET WARS – Marketplace & PSP FinCrime Graph Lab</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script type="module" src="https://unpkg.com/vis-network/standalone/esm/vis-network.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #020617;
+      color: #e5e7eb;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      box-sizing: border-box;
+    }
+    header {
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(148,163,184,0.3);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: radial-gradient(circle at top left, #0b1120, #020617);
+    }
+    header h1 {
+      font-size: 1.2rem;
+      margin: 0;
+    }
+    header p {
+      margin: 0;
+      font-size: 0.75rem;
+      color: #9ca3af;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid #4b5563;
+      font-size: 0.7rem;
+      color: #9ca3af;
+      margin-left: 4px;
+    }
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1.3fr) minmax(0, 1.4fr);
+      gap: 10px;
+      padding: 10px;
+      box-sizing: border-box;
+      min-height: 0;
+    }
+    @media (max-width: 960px) {
+      main {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 300px auto;
+      }
+    }
+    .panel {
+      background: radial-gradient(circle at top left, #020617, #020617);
+      border-radius: 12px;
+      border: 1px solid rgba(148,163,184,0.3);
+      box-shadow: 0 20px 45px rgba(0,0,0,0.75);
+      padding: 10px 12px;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+    h2 {
+      font-size: 0.9rem;
+      margin: 0 0 6px;
+      color: #a5b4fc;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    p {
+      margin: 3px 0 6px;
+      font-size: 0.78rem;
+      color: #9ca3af;
+    }
+    label {
+      display: block;
+      font-size: 0.75rem;
+      margin-bottom: 2px;
+      color: #9ca3af;
+    }
+    select {
+      width: 100%;
+      padding: 6px 8px;
+      border-radius: 8px;
+      border: 1px solid #4b5563;
+      background: #020617;
+      color: #e5e7eb;
+      font-size: 0.8rem;
+      box-sizing: border-box;
+    }
+    button {
+      background: linear-gradient(to right, #6366f1, #a855f7);
+      color: white;
+      border: none;
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      box-shadow: 0 14px 30px rgba(79,70,229,0.6);
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    .small {
+      font-size: 0.7rem;
+      color: #6b7280;
+    }
+    #network {
+      width: 100%;
+      height: calc(100% - 26px);
+      border-radius: 10px;
+      background: #020617;
+    }
+    .tab-buttons {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 6px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      border-radius: 999px;
+      border: 1px solid #4b5563;
+      padding: 3px 8px;
+      font-size: 0.72rem;
+      background: transparent;
+      color: #9ca3af;
+      cursor: pointer;
+    }
+    .tab-btn.active {
+      background: #111827;
+      color: #e5e7eb;
+      border-color: #6366f1;
+    }
+    .tab {
+      display: none;
+      max-height: calc(100% - 40px);
+      overflow-y: auto;
+    }
+    .tab.active {
+      display: block;
+    }
+    .pill-type {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      margin-right: 4px;
+      margin-bottom: 4px;
+      color: #e5e7eb;
+    }
+    .pill-seller { background: #334155; }
+    .pill-buyer { background: #0f766e; }
+    .pill-bank { background: #7c2d12; }
+    .pill-device { background: #4c1d95; }
+    .pill-card { background: #86198f; }
+    .pill-dispute { background: #713f12; }
+    .pill-other { background: #374151; }
+    ul {
+      padding-left: 14px;
+      margin: 0 0 4px;
+    }
+    ul li {
+      font-size: 0.78rem;
+      margin-bottom: 3px;
+    }
+    .copy-btn {
+      font-size: 0.7rem;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid #4b5563;
+      background: transparent;
+      color: #9ca3af;
+      margin-left: 4px;
+      cursor: pointer;
+    }
+    .copy-btn:hover {
+      background: #020617;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>MARKET WARS – Marketplace & PSP FinCrime Graph Lab</h1>
+      <p>Simulate hostile sellers, collusive rings, and payout mules across fraud / AML / trust lenses.</p>
+    </div>
+    <div>
+      <span class="badge">Graph-first</span>
+      <span class="badge">Client-side</span>
+      <span class="badge">No login</span>
+    </div>
+  </header>
+
+  <main>
+    <!-- LEFT PANEL -->
+    <section class="panel">
+      <h2>Scenario</h2>
+      <label for="scenarioSelect">Choose pattern</label>
+      <select id="scenarioSelect">
+        <option value="collusive_ring_cashback">Collusive ring – cashback & refunds</option>
+        <option value="competitor_attack_seller">Competitor attack – hostile seller</option>
+        <option value="payout_mule_cluster">Payout mule cluster – PSP / bank</option>
+      </select>
+      <p id="scenarioDescription" class="small"></p>
+
+      <h2 style="margin-top:10px;">Lens</h2>
+      <label for="lensSelect">Perspective</label>
+      <select id="lensSelect">
+        <option value="fraud">Fraud / Chargeback</option>
+        <option value="aml">AML / FinCrime</option>
+        <option value="ts">Trust & Safety</option>
+      </select>
+
+      <button id="loadScenarioBtn" style="margin-top:10px;">Load scenario</button>
+      <p class="small" style="margin-top:6px;">Graphs and explanations run fully in your browser. Data here is synthetic and for training only.</p>
+    </section>
+
+    <!-- CENTER PANEL: GRAPH -->
+    <section class="panel">
+      <h2>Graph</h2>
+      <p class="small">Nodes = sellers, buyers, devices, payout accounts, cards, disputes. Click a node or edge for details.</p>
+      <div id="network"></div>
+    </section>
+
+    <!-- RIGHT PANEL: DETAILS -->
+    <section class="panel">
+      <div class="tab-buttons">
+        <button class="tab-btn active" data-tab="tabSummary">Scenario summary</button>
+        <button class="tab-btn" data-tab="tabNode">Node role</button>
+        <button class="tab-btn" data-tab="tabScenarioLens">Lens narrative</button>
+        <button class="tab-btn" data-tab="tabChecks">Investigation checklist</button>
+      </div>
+
+      <div id="tabSummary" class="tab active">
+        <h2>Scenario summary</h2>
+        <p id="summaryText"></p>
+        <button class="copy-btn" id="copySummaryBtn">Copy summary</button>
+      </div>
+
+      <div id="tabNode" class="tab">
+        <h2>Selected node</h2>
+        <p id="nodeHeader"></p>
+        <p id="nodeExplanation"></p>
+        <button class="copy-btn" id="copyNodeBtn">Copy node insight</button>
+      </div>
+
+      <div id="tabScenarioLens" class="tab">
+        <h2>Lens narrative</h2>
+        <p id="lensNarrative"></p>
+        <button class="copy-btn" id="copyLensBtn">Copy lens narrative</button>
+      </div>
+
+      <div id="tabChecks" class="tab">
+        <h2>Investigation checklist</h2>
+        <ul id="checklist"></ul>
+        <button class="copy-btn" id="copyChecklistBtn">Copy checklist</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js" type="module"></script>
+</body>
+</html>
