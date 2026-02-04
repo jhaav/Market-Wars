@@ -1,0 +1,115 @@
+[
+  {
+    "id": "collusive_ring_cashback",
+    "name": "Collusive ring – cashback & refunds",
+    "description": "Buyers and sellers collude to farm cashback, discounts, and refunds via fake orders and coordinated behaviour.",
+    "nodes": [
+      { "id": "sellerA", "label": "Seller A", "type": "seller" },
+      { "id": "sellerB", "label": "Seller B", "type": "seller" },
+      { "id": "buyerX", "label": "Buyer X", "type": "buyer" },
+      { "id": "buyerY", "label": "Buyer Y", "type": "buyer" },
+      { "id": "buyerZ", "label": "Buyer Z", "type": "buyer" },
+      { "id": "device1", "label": "Device 1", "type": "device" },
+      { "id": "bank1", "label": "Payout Bank 1", "type": "bank" },
+      { "id": "card1", "label": "Card 1", "type": "card" },
+      { "id": "card2", "label": "Card 2", "type": "card" }
+    ],
+    "edges": [
+      { "from": "buyerX", "to": "sellerA", "type": "order" },
+      { "from": "buyerY", "to": "sellerA", "type": "order" },
+      { "from": "buyerZ", "to": "sellerA", "type": "order" },
+      { "from": "buyerX", "to": "sellerB", "type": "order" },
+      { "from": "buyerY", "to": "sellerB", "type": "order" },
+
+      { "from": "buyerX", "to": "card1", "type": "uses_card" },
+      { "from": "buyerY", "to": "card2", "type": "uses_card" },
+      { "from": "buyerZ", "to": "card2", "type": "uses_card" },
+
+      { "from": "buyerX", "to": "device1", "type": "uses_device" },
+      { "from": "buyerY", "to": "device1", "type": "uses_device" },
+      { "from": "buyerZ", "to": "device1", "type": "uses_device" },
+
+      { "from": "sellerA", "to": "bank1", "type": "payout" },
+      { "from": "sellerB", "to": "bank1", "type": "payout" }
+    ],
+    "checklist": [
+      "Quantify total value of orders and refunds between these buyers and sellers.",
+      "Compare refund/cashback ratios vs peer sellers in same category.",
+      "Review promotion/cashback eligibility and usage patterns.",
+      "Check device/IP overlaps across all linked accounts and prior cases.",
+      "Validate true owner of Payout Bank 1 and compare inflows/outflows vs declared business."
+    ]
+  },
+  {
+    "id": "competitor_attack_seller",
+    "name": "Competitor attack – hostile seller",
+    "description": "One seller attempts to damage a competitor using fake orders, complaints, and manipulative behaviour.",
+    "nodes": [
+      { "id": "sellerVictim", "label": "Seller Victim", "type": "seller" },
+      { "id": "sellerAttacker", "label": "Seller Attacker", "type": "seller" },
+      { "id": "buyerA1", "label": "Buyer A1", "type": "buyer" },
+      { "id": "buyerA2", "label": "Buyer A2", "type": "buyer" },
+      { "id": "buyerA3", "label": "Buyer A3", "type": "buyer" },
+      { "id": "deviceA", "label": "Device A", "type": "device" },
+      { "id": "deviceB", "label": "Device B", "type": "device" },
+      { "id": "bankA", "label": "Bank Account Attacker", "type": "bank" }
+    ],
+    "edges": [
+      { "from": "buyerA1", "to": "sellerVictim", "type": "order" },
+      { "from": "buyerA2", "to": "sellerVictim", "type": "order" },
+      { "from": "buyerA3", "to": "sellerVictim", "type": "order" },
+
+      { "from": "buyerA1", "to": "deviceA", "type": "uses_device" },
+      { "from": "buyerA2", "to": "deviceA", "type": "uses_device" },
+      { "from": "buyerA3", "to": "deviceB", "type": "uses_device" },
+
+      { "from": "sellerAttacker", "to": "buyerA1", "type": "controls" },
+      { "from": "sellerAttacker", "to": "buyerA2", "type": "controls" },
+      { "from": "sellerAttacker", "to": "buyerA3", "type": "controls" },
+
+      { "from": "sellerAttacker", "to": "bankA", "type": "payout" }
+    ],
+    "checklist": [
+      "Check ratio of negative reviews/complaints vs successful deliveries for Seller Victim.",
+      "Identify any links between complainant buyers and other sellers in same category.",
+      "Review timing of orders and complaints vs pricing and ranking changes.",
+      "Investigate Seller Attacker for shared devices, IPs, payment methods with the buyers.",
+      "Coordinate with Trust & Safety to align response on abuse of reviews/complaints."
+    ]
+  },
+  {
+    "id": "payout_mule_cluster",
+    "name": "Payout mule cluster – PSP / bank",
+    "description": "Multiple sellers and merchants funnel their balances into a single payout account, potentially acting as a mule or coordinator.",
+    "nodes": [
+      { "id": "seller1", "label": "Seller 1", "type": "seller" },
+      { "id": "seller2", "label": "Seller 2", "type": "seller" },
+      { "id": "seller3", "label": "Seller 3", "type": "seller" },
+      { "id": "merchant1", "label": "PSP Merchant 1", "type": "seller" },
+      { "id": "payoutMain", "label": "Payout Account Main", "type": "bank" },
+      { "id": "buyerM1", "label": "Buyer M1", "type": "buyer" },
+      { "id": "buyerM2", "label": "Buyer M2", "type": "buyer" },
+      { "id": "deviceP", "label": "Device P", "type": "device" }
+    ],
+    "edges": [
+      { "from": "buyerM1", "to": "seller1", "type": "order" },
+      { "from": "buyerM2", "to": "seller2", "type": "order" },
+      { "from": "buyerM1", "to": "merchant1", "type": "order" },
+
+      { "from": "buyerM1", "to": "deviceP", "type": "uses_device" },
+      { "from": "buyerM2", "to": "deviceP", "type": "uses_device" },
+
+      { "from": "seller1", "to": "payoutMain", "type": "payout" },
+      { "from": "seller2", "to": "payoutMain", "type": "payout" },
+      { "from": "seller3", "to": "payoutMain", "type": "payout" },
+      { "from": "merchant1", "to": "payoutMain", "type": "payout" }
+    ],
+    "checklist": [
+      "Compute total inflows to Payout Account Main from all sellers/merchants and compare to declared profile.",
+      "Determine whether sellers/merchants share beneficial ownership, documents, or addresses.",
+      "Check for rapid onward movement of funds from Payout Account Main to other banks/crypto.",
+      "Assess whether this account appears in other known fraud or scam investigations.",
+      "Consider whether this structure justifies STR/SAR filing under AML obligations."
+    ]
+  }
+]
